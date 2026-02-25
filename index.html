@@ -13,7 +13,7 @@
         }
 
         body {
-            background: #1a1a1a; /* тёмный фон вокруг карточки, как на скриншоте */
+            background: #1a1a1a;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -21,19 +21,16 @@
             padding: 16px;
         }
 
-        /* главный контейнер — точная копия стиля скриншота */
         .chat-card {
             max-width: 420px;
             width: 100%;
-            background-color: #2d2d2d;  /* тёмно-серый фон чата */
+            background-color: #2d2d2d;
             border-radius: 28px;
             box-shadow: 0 20px 35px -8px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03) inset;
             overflow: hidden;
-            backdrop-filter: blur(2px);
             color: #eaeaea;
         }
 
-        /* header как на скриншоте: "Новый чат" и иконка */
         .chat-header {
             padding: 20px 22px 12px 22px;
             display: flex;
@@ -55,11 +52,15 @@
             line-height: 1;
             color: #b0b0b0;
             transform: rotate(90deg);
-            cursor: default;
+            cursor: pointer;
             user-select: none;
+            transition: 0.2s;
         }
 
-        /* центральная область — приветствие, подсказка */
+        .menu-icon:hover {
+            color: #ffffff;
+        }
+
         .greeting-area {
             padding: 20px 22px 28px 22px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -80,7 +81,6 @@
 
         .big-avatar span {
             font-size: 2.1rem;
-            filter: grayscale(0.2);
         }
 
         .greeting-area h3 {
@@ -110,20 +110,70 @@
             color: #d0d0d0;
         }
 
-        /* плейсхолдер-сообщения (пустой чат) */
-        .empty-chat {
-            padding: 8px 22px 20px 22px;
+        /* Новые кнопки функций */
+        .feature-buttons {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-height: 200px;
+            gap: 12px;
+            margin: 16px 22px 10px 22px;
+        }
+
+        .feature-btn {
+            flex: 1;
+            background: #363636;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 30px;
+            padding: 12px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #d0d0d0;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .feature-btn:hover {
+            background: #404040;
+            border-color: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        .feature-btn.active {
+            background: #4a4a4a;
+            border-color: #6a6a6a;
+            color: white;
+        }
+
+        .feature-icon {
+            font-size: 1.2rem;
+        }
+
+        .chat-messages {
+            max-height: 340px;
+            overflow-y: auto;
+            padding: 8px 22px 20px 22px;
+            scrollbar-width: thin;
+            scrollbar-color: #4f4f4f #2d2d2d;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 5px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 12px;
         }
 
         .message-placeholder {
             display: flex;
             gap: 14px;
             align-items: flex-start;
-            opacity: 0.5;
+            margin-bottom: 16px;
         }
 
         .avatar-small {
@@ -136,21 +186,36 @@
             justify-content: center;
             border: 1px solid rgba(255,255,255,0.06);
             font-size: 1.2rem;
+            flex-shrink: 0;
         }
 
         .bubble {
             background: #262626;
-            padding: 16px 18px;
+            padding: 14px 18px;
             border-radius: 24px;
             border-bottom-left-radius: 6px;
-            color: #cccccc;
+            color: #e0e0e0;
             font-size: 0.95rem;
-            line-height: 1.4;
-            max-width: 80%;
+            line-height: 1.5;
             border: 1px solid rgba(255,255,255,0.03);
         }
 
-        /* поле ввода (как внизу скриншота) */
+        .bubble.user-bubble {
+            background: #1e3a3a;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 6px;
+        }
+
+        .bubble.reasoning-bubble {
+            background: #2a2a3a;
+            border-left: 3px solid #6a5acd;
+        }
+
+        .bubble.search-bubble {
+            background: #2a3a2a;
+            border-left: 3px solid #3a9b5a;
+        }
+
         .input-area {
             padding: 18px 22px 24px 22px;
             background: #2a2a2a;
@@ -221,27 +286,6 @@
             color: white;
         }
 
-        /* простой скролл, если контента много */
-        .chat-messages {
-            max-height: 340px;
-            overflow-y: auto;
-            padding-right: 4px;
-            scrollbar-width: thin;
-            scrollbar-color: #4f4f4f #2d2d2d;
-        }
-
-        .chat-messages::-webkit-scrollbar {
-            width: 5px;
-        }
-        .chat-messages::-webkit-scrollbar-track {
-            background: #2d2d2d;
-        }
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 12px;
-        }
-
-        /* небольшая анимация появления */
         .message-local {
             animation: fadeIn 0.2s ease;
         }
@@ -249,20 +293,37 @@
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Индикатор активной функции */
+        .active-feature-indicator {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+            padding: 0 22px 8px 22px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .feature-tag {
+            background: #363636;
+            padding: 4px 10px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="chat-card">
-        <!-- Шапка: Новый чат + три точки (меню) -->
         <div class="chat-header">
             <h2>Новый чат</h2>
             <div class="menu-icon">⋯</div>
         </div>
 
-        <!-- Приветственный блок / Аватар / Подсказка -->
         <div class="greeting-area">
             <div class="big-avatar">
-                <span>🧠</span> <!-- иконка brain / AI -->
+                <span>🧠</span>
             </div>
             <h3>Чем могу помочь?</h3>
             <div class="hint">
@@ -271,26 +332,35 @@
             </div>
         </div>
 
-        <!-- Контейнер для динамических сообщений (изначально пуст, но в коде есть один пример "deepseek") 
-             Мы добавим дефолтное сообщение "BloxSeek запущен" для красоты -->
+        <!-- Новые кнопки функций: Рассуждение и Поиск -->
+        <div class="feature-buttons">
+            <button class="feature-btn" id="reasoningBtn">
+                <span class="feature-icon">🧐</span>
+                <span>Рассуждение</span>
+            </button>
+            <button class="feature-btn" id="searchBtn">
+                <span class="feature-icon">🔍</span>
+                <span>Поиск</span>
+            </button>
+        </div>
+
+        <!-- Индикатор активной функции -->
+        <div class="active-feature-indicator" id="featureIndicator">
+            <span class="feature-tag">💬 Обычный режим</span>
+        </div>
+
+        <!-- Контейнер сообщений (теперь без скриншота) -->
         <div class="chat-messages" id="messageContainer">
+            <!-- Только приветственное сообщение -->
             <div class="message-placeholder message-local">
                 <div class="avatar-small">🤖</div>
                 <div class="bubble">BloxSeek готов к работе. Спроси что угодно.</div>
             </div>
-            <!-- Пример сообщения, похожего на "Screenshot_... .jpg" — для атмосферы -->
-            <div class="message-placeholder message-local">
-                <div class="avatar-small">📎</div>
-                <div class="bubble">Файл: Screenshot_2026-02-25-19-09-17-254_com.deepseek.chat.jpg</div>
-            </div>
         </div>
 
-        <!-- Поле ввода + кнопки (как на скриншоте) -->
         <div class="input-area">
             <div class="input-wrapper">
                 <input type="text" placeholder="Напишите или удерживайте, чтобы ..." id="messageInput">
-                <!-- Скрытый "микрофон" внутри инпута не ставим, но символ уже есть в hint. 
-                Поставим скрытую кнопку для голоса в будущем? Лучше оставим placeholder. -->
             </div>
             <button class="action-btn" id="attachBtn" title="Прикрепить">📎</button>
             <button class="action-btn send-btn" id="sendBtn" title="Отправить">➤</button>
@@ -304,37 +374,96 @@
             const sendButton = document.getElementById('sendBtn');
             const attachButton = document.getElementById('attachBtn');
             const messagesContainer = document.getElementById('messageContainer');
+            const reasoningBtn = document.getElementById('reasoningBtn');
+            const searchBtn = document.getElementById('searchBtn');
+            const featureIndicator = document.getElementById('featureIndicator');
+            const menuIcon = document.querySelector('.menu-icon');
 
-            // Функция добавления нового сообщения (пользовательского)
+            // Состояние режима: 'normal', 'reasoning', 'search'
+            let currentMode = 'normal';
+
+            // Обновление индикатора и активных кнопок
+            function updateFeatureUI() {
+                // Сброс активных классов
+                reasoningBtn.classList.remove('active');
+                searchBtn.classList.remove('active');
+
+                // Обновление индикатора
+                if (currentMode === 'reasoning') {
+                    reasoningBtn.classList.add('active');
+                    featureIndicator.innerHTML = '<span class="feature-tag">🧐 Режим рассуждения</span>';
+                } else if (currentMode === 'search') {
+                    searchBtn.classList.add('active');
+                    featureIndicator.innerHTML = '<span class="feature-tag">🔍 Режим поиска</span>';
+                } else {
+                    featureIndicator.innerHTML = '<span class="feature-tag">💬 Обычный режим</span>';
+                }
+            }
+
+            // Обработчики кнопок режимов
+            reasoningBtn.addEventListener('click', () => {
+                if (currentMode === 'reasoning') {
+                    currentMode = 'normal'; // отключаем режим
+                } else {
+                    currentMode = 'reasoning';
+                }
+                updateFeatureUI();
+                addBotMessage(`🧐 Режим рассуждения ${currentMode === 'reasoning' ? 'включён' : 'выключен'}.`);
+            });
+
+            searchBtn.addEventListener('click', () => {
+                if (currentMode === 'search') {
+                    currentMode = 'normal';
+                } else {
+                    currentMode = 'search';
+                }
+                updateFeatureUI();
+                addBotMessage(`🔍 Режим поиска ${currentMode === 'search' ? 'включён' : 'выключен'}.`);
+            });
+
+            // Функция добавления сообщения пользователя
             function addUserMessage(text) {
                 if (!text.trim()) return false;
 
-                // Создаём элемент сообщения
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message-placeholder message-local';
                 messageDiv.innerHTML = `
                     <div class="avatar-small">👤</div>
-                    <div class="bubble" style="background: #2a3a3a; border-bottom-left-radius: 18px; border-bottom-right-radius: 6px;">${escapeHTML(text)}</div>
+                    <div class="bubble user-bubble">${escapeHTML(text)}</div>
                 `;
                 messagesContainer.appendChild(messageDiv);
-                // Автоскролл вниз
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 return true;
             }
 
-            // Добавить ответ от "BloxSeek" (имитация нейросети)
-            function addBotMessage(text) {
+            // Функция добавления ответа от бота с учётом режима
+            function addBotMessage(text, mode = null) {
                 const botDiv = document.createElement('div');
                 botDiv.className = 'message-placeholder message-local';
+                
+                let bubbleClass = 'bubble';
+                let avatar = '🧠';
+                
+                // Выбор оформления в зависимости от режима
+                if (mode === 'reasoning' || currentMode === 'reasoning') {
+                    bubbleClass += ' reasoning-bubble';
+                    avatar = '🧐';
+                } else if (mode === 'search' || currentMode === 'search') {
+                    bubbleClass += ' search-bubble';
+                    avatar = '🔍';
+                } else {
+                    avatar = '🤖';
+                }
+
                 botDiv.innerHTML = `
-                    <div class="avatar-small">🧠</div>
-                    <div class="bubble">${escapeHTML(text)}</div>
+                    <div class="avatar-small">${avatar}</div>
+                    <div class="${bubbleClass}">${escapeHTML(text)}</div>
                 `;
                 messagesContainer.appendChild(botDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
 
-            // Простейший экранирование HTML
+            // Экранирование HTML
             function escapeHTML(unsafe) {
                 return unsafe.replace(/[&<>"]/g, function(m) {
                     if(m === '&') return '&amp;';
@@ -345,32 +474,49 @@
                 });
             }
 
+            // Генерация ответа в зависимости от режима
+            function generateResponse(userMessage) {
+                const msg = userMessage.toLowerCase();
+
+                if (currentMode === 'reasoning') {
+                    if (msg.includes('почему') || msg.includes('зачем') || msg.includes('как')) {
+                        return "Давайте поразмышляем... 🤔 " + userMessage + "? Это интересный вопрос. Возможно, дело в том, что нейросети обучаются на больших данных. Но нужно учитывать контекст.";
+                    }
+                    return "🧐 Рассуждая логически: " + userMessage + ". Мне кажется, здесь важно обратить внимание на детали. Что именно вас интересует?";
+                }
+                
+                if (currentMode === 'search') {
+                    return "🔍 Ищу в интернете: «" + userMessage + "»...\n\nВот что удалось найти:\n• Первый результат по запросу\n• Второй связанный источник\n• Дополнительная информация";
+                }
+                
+                // Обычный режим
+                const answers = [
+                    "Интересный вопрос!",
+                    "Я могу помочь с этим.",
+                    "Расскажи подробнее.",
+                    "Чем ещё могу быть полезен?",
+                    "Понял, продолжаем."
+                ];
+                return answers[Math.floor(Math.random() * answers.length)];
+            }
+
             // Обработка отправки сообщения
             function handleSend() {
                 const msg = inputField.value.trim();
                 if (msg === '') return;
 
                 addUserMessage(msg);
-                inputField.value = ''; // очистить
+                inputField.value = '';
 
-                // Имитация ответа нейросети через небольшую задержку
                 setTimeout(() => {
-                    const answers = [
-                        "Это похоже на дизайн DeepSeek!",
-                        "Чем ещё могу помочь?",
-                        "BloxSeek обрабатывает запрос...",
-                        "Интересный вопрос, подумаю.",
-                        "Можешь уточнить?",
-                    ];
-                    const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
-                    addBotMessage(randomAnswer);
-                }, 500);
+                    const response = generateResponse(msg);
+                    addBotMessage(response);
+                }, 600);
             }
 
-            // Отправка по кнопке
+            // Обработчики событий
             sendButton.addEventListener('click', handleSend);
 
-            // Отправка по Enter
             inputField.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -378,27 +524,22 @@
                 }
             });
 
-            // Кнопка "прикрепить" — имитация (выводим подсказку)
             attachButton.addEventListener('click', () => {
-                addBotMessage("📎 Функция прикрепления файлов в разработке. Но вы можете написать сообщение.");
+                addBotMessage("📎 Функция прикрепления файлов появится скоро.");
             });
 
-            // Для атмосферы — скопируем название файла из скриншота, если ввести спецкоманду не нужно
-            // Уже есть статическое сообщение с именем файла в разметке.
-
-            // Дополнительная деталь: при клике на "три точки" (меню) можно ничего не делать, 
-            // но для интереса выведем подсказку
-            document.querySelector('.menu-icon').addEventListener('click', () => {
-                addBotMessage("Меню: настройки BloxSeek скоро появятся.");
+            menuIcon.addEventListener('click', () => {
+                addBotMessage("Меню BloxSeek: здесь будут настройки и история чатов.");
             });
 
-            // Также можно ответить на "большой аватар"
+            // Двойной клик по аватарке
             document.querySelector('.big-avatar').addEventListener('dblclick', () => {
-                addBotMessage("BloxSeek v0.1 — нейросеть с интерфейсом как на скриншоте.");
+                addBotMessage("BloxSeek v0.2 — теперь с режимами рассуждения и поиска!");
             });
+
+            // Инициализация UI
+            updateFeatureUI();
         })();
     </script>
-
-    <!-- Подсказка для пользователя: дизайн полностью повторяет скриншот, но это интерактивная нейросеть -->
 </body>
 </html>
