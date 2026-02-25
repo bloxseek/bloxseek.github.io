@@ -1,111 +1,404 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>BloxSeek Chat</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #1e1e1e;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-    .chat-box {
-        width: 300px;
-        height: 400px;
-        background: #2c2c2c;
-        display: flex;
-        flex-direction: column;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    .messages {
-        flex: 1;
-        padding: 10px;
-        overflow-y: auto;
-        color: #fff;
-        font-size: 14px;
-    }
-    .message {
-        margin: 5px 0;
-        padding: 5px 8px;
-        border-radius: 5px;
-        max-width: 80%;
-        word-wrap: break-word;
-    }
-    .user {
-        background: #ffcc00;
-        color: #000;
-        align-self: flex-end;
-    }
-    .bot {
-        background: #555;
-        align-self: flex-start;
-    }
-    .input-container {
-        display: flex;
-        border-top: 1px solid #444;
-    }
-    input[type="text"] {
-        flex: 1;
-        border: none;
-        padding: 8px;
-        font-size: 14px;
-        background: #333;
-        color: #fff;
-    }
-    input[type="text"]:focus {
-        outline: none;
-    }
-    button {
-        border: none;
-        background: #ffcc00;
-        color: #000;
-        padding: 0 12px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloxSeek · Нейросеть</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #1a1a1a; /* тёмный фон вокруг карточки, как на скриншоте */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        /* главный контейнер — точная копия стиля скриншота */
+        .chat-card {
+            max-width: 420px;
+            width: 100%;
+            background-color: #2d2d2d;  /* тёмно-серый фон чата */
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -8px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03) inset;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+            color: #eaeaea;
+        }
+
+        /* header как на скриншоте: "Новый чат" и иконка */
+        .chat-header {
+            padding: 20px 22px 12px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .chat-header h2 {
+            font-weight: 500;
+            font-size: 1.45rem;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+            opacity: 0.95;
+        }
+
+        .menu-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+            color: #b0b0b0;
+            transform: rotate(90deg);
+            cursor: default;
+            user-select: none;
+        }
+
+        /* центральная область — приветствие, подсказка */
+        .greeting-area {
+            padding: 20px 22px 28px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .big-avatar {
+            width: 62px;
+            height: 62px;
+            background: #3a3a3a;
+            border-radius: 31px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .big-avatar span {
+            font-size: 2.1rem;
+            filter: grayscale(0.2);
+        }
+
+        .greeting-area h3 {
+            font-size: 1.65rem;
+            font-weight: 500;
+            line-height: 1.2;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .greeting-area .hint {
+            color: #a8a8a8;
+            font-size: 1rem;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.02);
+            padding: 12px 16px;
+            border-radius: 40px;
+            margin-top: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .hint .mic-symbol {
+            font-size: 1.4rem;
+            color: #d0d0d0;
+        }
+
+        /* плейсхолдер-сообщения (пустой чат) */
+        .empty-chat {
+            padding: 8px 22px 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 200px;
+        }
+
+        .message-placeholder {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            opacity: 0.5;
+        }
+
+        .avatar-small {
+            width: 38px;
+            height: 38px;
+            background: #383838;
+            border-radius: 19px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.06);
+            font-size: 1.2rem;
+        }
+
+        .bubble {
+            background: #262626;
+            padding: 16px 18px;
+            border-radius: 24px;
+            border-bottom-left-radius: 6px;
+            color: #cccccc;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            max-width: 80%;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        /* поле ввода (как внизу скриншота) */
+        .input-area {
+            padding: 18px 22px 24px 22px;
+            background: #2a2a2a;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            background: #202020;
+            border-radius: 40px;
+            padding: 4px 4px 4px 20px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.2s;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #5f5f5f;
+        }
+
+        .input-wrapper input {
+            background: transparent;
+            border: none;
+            padding: 14px 5px 14px 0;
+            font-size: 1rem;
+            width: 100%;
+            outline: none;
+            color: white;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #6b6b6b;
+            font-weight: 400;
+        }
+
+        .action-btn {
+            background: #3b3b3b;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #dddddd;
+            font-size: 1.5rem;
+        }
+
+        .action-btn:hover {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .action-btn.send-btn {
+            background: #3e3e3e;
+            color: #bdbdbd;
+        }
+
+        .action-btn.send-btn:hover {
+            background: #5a5a5a;
+            color: white;
+        }
+
+        /* простой скролл, если контента много */
+        .chat-messages {
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: #4f4f4f #2d2d2d;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 5px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 12px;
+        }
+
+        /* небольшая анимация появления */
+        .message-local {
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
+    <div class="chat-card">
+        <!-- Шапка: Новый чат + три точки (меню) -->
+        <div class="chat-header">
+            <h2>Новый чат</h2>
+            <div class="menu-icon">⋯</div>
+        </div>
 
-<div class="chat-box">
-    <div class="messages" id="messages"></div>
-    <div class="input-container">
-        <input type="text" id="chatInput" placeholder="Сообщение...">
-        <button onclick="sendMessage()">▶</button>
+        <!-- Приветственный блок / Аватар / Подсказка -->
+        <div class="greeting-area">
+            <div class="big-avatar">
+                <span>🧠</span> <!-- иконка brain / AI -->
+            </div>
+            <h3>Чем могу помочь?</h3>
+            <div class="hint">
+                <span class="mic-symbol">🎤</span>
+                <span>Напишите или удерживайте, чтобы ...</span>
+            </div>
+        </div>
+
+        <!-- Контейнер для динамических сообщений (изначально пуст, но в коде есть один пример "deepseek") 
+             Мы добавим дефолтное сообщение "BloxSeek запущен" для красоты -->
+        <div class="chat-messages" id="messageContainer">
+            <div class="message-placeholder message-local">
+                <div class="avatar-small">🤖</div>
+                <div class="bubble">BloxSeek готов к работе. Спроси что угодно.</div>
+            </div>
+            <!-- Пример сообщения, похожего на "Screenshot_... .jpg" — для атмосферы -->
+            <div class="message-placeholder message-local">
+                <div class="avatar-small">📎</div>
+                <div class="bubble">Файл: Screenshot_2026-02-25-19-09-17-254_com.deepseek.chat.jpg</div>
+            </div>
+        </div>
+
+        <!-- Поле ввода + кнопки (как на скриншоте) -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <input type="text" placeholder="Напишите или удерживайте, чтобы ..." id="messageInput">
+                <!-- Скрытый "микрофон" внутри инпута не ставим, но символ уже есть в hint. 
+                Поставим скрытую кнопку для голоса в будущем? Лучше оставим placeholder. -->
+            </div>
+            <button class="action-btn" id="attachBtn" title="Прикрепить">📎</button>
+            <button class="action-btn send-btn" id="sendBtn" title="Отправить">➤</button>
+        </div>
     </div>
-</div>
 
-<script>
-function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const messages = document.getElementById('messages');
-    const text = input.value.trim();
-    if (!text) return;
+    <script>
+        (function() {
+            // Элементы интерфейса
+            const inputField = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendBtn');
+            const attachButton = document.getElementById('attachBtn');
+            const messagesContainer = document.getElementById('messageContainer');
 
-    // Добавляем сообщение пользователя
-    const userMsg = document.createElement('div');
-    userMsg.className = 'message user';
-    userMsg.textContent = text;
-    messages.appendChild(userMsg);
+            // Функция добавления нового сообщения (пользовательского)
+            function addUserMessage(text) {
+                if (!text.trim()) return false;
 
-    input.value = '';
-    messages.scrollTop = messages.scrollHeight;
+                // Создаём элемент сообщения
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-placeholder message-local';
+                messageDiv.innerHTML = `
+                    <div class="avatar-small">👤</div>
+                    <div class="bubble" style="background: #2a3a3a; border-bottom-left-radius: 18px; border-bottom-right-radius: 6px;">${escapeHTML(text)}</div>
+                `;
+                messagesContainer.appendChild(messageDiv);
+                // Автоскролл вниз
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                return true;
+            }
 
-    // Ответ бота (имитация)
-    setTimeout(() => {
-        const botMsg = document.createElement('div');
-        botMsg.className = 'message bot';
-        botMsg.textContent = `Бот: получил "${text}"`;
-        messages.appendChild(botMsg);
-        messages.scrollTop = messages.scrollHeight;
-    }, 300);
-}
-</script>
+            // Добавить ответ от "BloxSeek" (имитация нейросети)
+            function addBotMessage(text) {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'message-placeholder message-local';
+                botDiv.innerHTML = `
+                    <div class="avatar-small">🧠</div>
+                    <div class="bubble">${escapeHTML(text)}</div>
+                `;
+                messagesContainer.appendChild(botDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
 
+            // Простейший экранирование HTML
+            function escapeHTML(unsafe) {
+                return unsafe.replace(/[&<>"]/g, function(m) {
+                    if(m === '&') return '&amp;';
+                    if(m === '<') return '&lt;';
+                    if(m === '>') return '&gt;';
+                    if(m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            // Обработка отправки сообщения
+            function handleSend() {
+                const msg = inputField.value.trim();
+                if (msg === '') return;
+
+                addUserMessage(msg);
+                inputField.value = ''; // очистить
+
+                // Имитация ответа нейросети через небольшую задержку
+                setTimeout(() => {
+                    const answers = [
+                        "Это похоже на дизайн DeepSeek!",
+                        "Чем ещё могу помочь?",
+                        "BloxSeek обрабатывает запрос...",
+                        "Интересный вопрос, подумаю.",
+                        "Можешь уточнить?",
+                    ];
+                    const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
+                    addBotMessage(randomAnswer);
+                }, 500);
+            }
+
+            // Отправка по кнопке
+            sendButton.addEventListener('click', handleSend);
+
+            // Отправка по Enter
+            inputField.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSend();
+                }
+            });
+
+            // Кнопка "прикрепить" — имитация (выводим подсказку)
+            attachButton.addEventListener('click', () => {
+                addBotMessage("📎 Функция прикрепления файлов в разработке. Но вы можете написать сообщение.");
+            });
+
+            // Для атмосферы — скопируем название файла из скриншота, если ввести спецкоманду не нужно
+            // Уже есть статическое сообщение с именем файла в разметке.
+
+            // Дополнительная деталь: при клике на "три точки" (меню) можно ничего не делать, 
+            // но для интереса выведем подсказку
+            document.querySelector('.menu-icon').addEventListener('click', () => {
+                addBotMessage("Меню: настройки BloxSeek скоро появятся.");
+            });
+
+            // Также можно ответить на "большой аватар"
+            document.querySelector('.big-avatar').addEventListener('dblclick', () => {
+                addBotMessage("BloxSeek v0.1 — нейросеть с интерфейсом как на скриншоте.");
+            });
+        })();
+    </script>
+
+    <!-- Подсказка для пользователя: дизайн полностью повторяет скриншот, но это интерактивная нейросеть -->
 </body>
 </html>
