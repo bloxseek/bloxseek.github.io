@@ -3,543 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BloxSeek · Нейросеть</title>
+    <title>BloxSeek - Нейросеть</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background: #1a1a1a;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .chat-card {
-            max-width: 420px;
-            width: 100%;
-            background-color: #2d2d2d;
-            border-radius: 28px;
-            box-shadow: 0 20px 35px -8px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03) inset;
-            overflow: hidden;
-            color: #eaeaea;
-        }
-
-        .chat-header {
-            padding: 20px 22px 12px 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .chat-header h2 {
-            font-weight: 500;
-            font-size: 1.45rem;
-            letter-spacing: -0.01em;
-            color: #ffffff;
-            opacity: 0.95;
-        }
-
-        .menu-icon {
-            font-size: 1.6rem;
-            line-height: 1;
-            color: #b0b0b0;
-            transform: rotate(90deg);
-            cursor: pointer;
-            user-select: none;
-            transition: 0.2s;
-        }
-
-        .menu-icon:hover {
-            color: #ffffff;
-        }
-
-        .greeting-area {
-            padding: 20px 22px 28px 22px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .big-avatar {
-            width: 62px;
-            height: 62px;
-            background: #3a3a3a;
-            border-radius: 31px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-        }
-
-        .big-avatar span {
-            font-size: 2.1rem;
-        }
-
-        .greeting-area h3 {
-            font-size: 1.65rem;
-            font-weight: 500;
-            line-height: 1.2;
-            color: white;
-            margin-bottom: 8px;
-        }
-
-        .greeting-area .hint {
-            color: #a8a8a8;
-            font-size: 1rem;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.02);
-            padding: 12px 16px;
-            border-radius: 40px;
-            margin-top: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .hint .mic-symbol {
-            font-size: 1.4rem;
-            color: #d0d0d0;
-        }
-
-        /* Новые кнопки функций */
-        .feature-buttons {
-            display: flex;
-            gap: 12px;
-            margin: 16px 22px 10px 22px;
-        }
-
-        .feature-btn {
-            flex: 1;
-            background: #363636;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 30px;
-            padding: 12px 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: #d0d0d0;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .feature-btn:hover {
-            background: #404040;
-            border-color: rgba(255,255,255,0.15);
-            color: white;
-        }
-
-        .feature-btn.active {
-            background: #4a4a4a;
-            border-color: #6a6a6a;
-            color: white;
-        }
-
-        .feature-icon {
-            font-size: 1.2rem;
-        }
-
-        .chat-messages {
-            max-height: 340px;
-            overflow-y: auto;
-            padding: 8px 22px 20px 22px;
-            scrollbar-width: thin;
-            scrollbar-color: #4f4f4f #2d2d2d;
-        }
-
-        .chat-messages::-webkit-scrollbar {
-            width: 5px;
-        }
-        .chat-messages::-webkit-scrollbar-track {
-            background: #2d2d2d;
-        }
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 12px;
-        }
-
-        .message-placeholder {
-            display: flex;
-            gap: 14px;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-
-        .avatar-small {
-            width: 38px;
-            height: 38px;
-            background: #383838;
-            border-radius: 19px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255,255,255,0.06);
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .bubble {
-            background: #262626;
-            padding: 14px 18px;
-            border-radius: 24px;
-            border-bottom-left-radius: 6px;
-            color: #e0e0e0;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            border: 1px solid rgba(255,255,255,0.03);
-        }
-
-        .bubble.user-bubble {
-            background: #1e3a3a;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 6px;
-        }
-
-        .bubble.reasoning-bubble {
-            background: #2a2a3a;
-            border-left: 3px solid #6a5acd;
-        }
-
-        .bubble.search-bubble {
-            background: #2a3a2a;
-            border-left: 3px solid #3a9b5a;
-        }
-
-        .input-area {
-            padding: 18px 22px 24px 22px;
-            background: #2a2a2a;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .input-wrapper {
-            flex: 1;
-            background: #202020;
-            border-radius: 40px;
-            padding: 4px 4px 4px 20px;
-            display: flex;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.2s;
-        }
-
-        .input-wrapper:focus-within {
-            border-color: #5f5f5f;
-        }
-
-        .input-wrapper input {
-            background: transparent;
-            border: none;
-            padding: 14px 5px 14px 0;
-            font-size: 1rem;
-            width: 100%;
-            outline: none;
-            color: white;
-        }
-
-        .input-wrapper input::placeholder {
-            color: #6b6b6b;
-            font-weight: 400;
-        }
-
-        .action-btn {
-            background: #3b3b3b;
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.15s;
-            border: 1px solid rgba(255,255,255,0.05);
-            color: #dddddd;
-            font-size: 1.5rem;
-        }
-
-        .action-btn:hover {
-            background: #4a4a4a;
-            color: white;
-        }
-
-        .action-btn.send-btn {
-            background: #3e3e3e;
-            color: #bdbdbd;
-        }
-
-        .action-btn.send-btn:hover {
-            background: #5a5a5a;
-            color: white;
-        }
-
-        .message-local {
-            animation: fadeIn 0.2s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Индикатор активной функции */
-        .active-feature-indicator {
-            font-size: 0.8rem;
-            color: #a0a0a0;
-            padding: 0 22px 8px 22px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .feature-tag {
-            background: #363636;
-            padding: 4px 10px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
+        body { background: #1a1a1a; color: white; font-family: sans-serif; }
+        .chat-container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        #messages { height: 400px; overflow-y: auto; border: 1px solid #333; padding: 10px; }
+        .user-message { color: #00ff00; }
+        .bot-message { color: #00ffff; }
     </style>
 </head>
 <body>
-    <div class="chat-card">
-        <div class="chat-header">
-            <h2>Новый чат</h2>
-            <div class="menu-icon">⋯</div>
-        </div>
-
-        <div class="greeting-area">
-            <div class="big-avatar">
-                <span>🧠</span>
-            </div>
-            <h3>Чем могу помочь?</h3>
-            <div class="hint">
-                <span class="mic-symbol">🎤</span>
-                <span>Напишите или удерживайте, чтобы ...</span>
-            </div>
-        </div>
-
-        <!-- Новые кнопки функций: Рассуждение и Поиск -->
-        <div class="feature-buttons">
-            <button class="feature-btn" id="reasoningBtn">
-                <span class="feature-icon">🧐</span>
-                <span>Рассуждение</span>
-            </button>
-            <button class="feature-btn" id="searchBtn">
-                <span class="feature-icon">🔍</span>
-                <span>Поиск</span>
-            </button>
-        </div>
-
-        <!-- Индикатор активной функции -->
-        <div class="active-feature-indicator" id="featureIndicator">
-            <span class="feature-tag">💬 Обычный режим</span>
-        </div>
-
-        <!-- Контейнер сообщений (теперь без скриншота) -->
-        <div class="chat-messages" id="messageContainer">
-            <!-- Только приветственное сообщение -->
-            <div class="message-placeholder message-local">
-                <div class="avatar-small">🤖</div>
-                <div class="bubble">BloxSeek готов к работе. Спроси что угодно.</div>
-            </div>
-        </div>
-
-        <div class="input-area">
-            <div class="input-wrapper">
-                <input type="text" placeholder="Напишите или удерживайте, чтобы ..." id="messageInput">
-            </div>
-            <button class="action-btn" id="attachBtn" title="Прикрепить">📎</button>
-            <button class="action-btn send-btn" id="sendBtn" title="Отправить">➤</button>
-        </div>
+    <div class="chat-container">
+        <h1>🧠 BloxSeek</h1>
+        <div id="messages"></div>
+        <input type="text" id="userInput" placeholder="Напиши сообщение...">
+        <button onclick="sendMessage()">Отправить</button>
     </div>
 
     <script>
-        (function() {
-            // Элементы интерфейса
-            const inputField = document.getElementById('messageInput');
-            const sendButton = document.getElementById('sendBtn');
-            const attachButton = document.getElementById('attachBtn');
-            const messagesContainer = document.getElementById('messageContainer');
-            const reasoningBtn = document.getElementById('reasoningBtn');
-            const searchBtn = document.getElementById('searchBtn');
-            const featureIndicator = document.getElementById('featureIndicator');
-            const menuIcon = document.querySelector('.menu-icon');
-
-            // Состояние режима: 'normal', 'reasoning', 'search'
-            let currentMode = 'normal';
-
-            // Обновление индикатора и активных кнопок
-            function updateFeatureUI() {
-                // Сброс активных классов
-                reasoningBtn.classList.remove('active');
-                searchBtn.classList.remove('active');
-
-                // Обновление индикатора
-                if (currentMode === 'reasoning') {
-                    reasoningBtn.classList.add('active');
-                    featureIndicator.innerHTML = '<span class="feature-tag">🧐 Режим рассуждения</span>';
-                } else if (currentMode === 'search') {
-                    searchBtn.classList.add('active');
-                    featureIndicator.innerHTML = '<span class="feature-tag">🔍 Режим поиска</span>';
-                } else {
-                    featureIndicator.innerHTML = '<span class="feature-tag">💬 Обычный режим</span>';
-                }
-            }
-
-            // Обработчики кнопок режимов
-            reasoningBtn.addEventListener('click', () => {
-                if (currentMode === 'reasoning') {
-                    currentMode = 'normal'; // отключаем режим
-                } else {
-                    currentMode = 'reasoning';
-                }
-                updateFeatureUI();
-                addBotMessage(`🧐 Режим рассуждения ${currentMode === 'reasoning' ? 'включён' : 'выключен'}.`);
-            });
-
-            searchBtn.addEventListener('click', () => {
-                if (currentMode === 'search') {
-                    currentMode = 'normal';
-                } else {
-                    currentMode = 'search';
-                }
-                updateFeatureUI();
-                addBotMessage(`🔍 Режим поиска ${currentMode === 'search' ? 'включён' : 'выключен'}.`);
-            });
-
-            // Функция добавления сообщения пользователя
-            function addUserMessage(text) {
-                if (!text.trim()) return false;
-
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message-placeholder message-local';
-                messageDiv.innerHTML = `
-                    <div class="avatar-small">👤</div>
-                    <div class="bubble user-bubble">${escapeHTML(text)}</div>
-                `;
-                messagesContainer.appendChild(messageDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                return true;
-            }
-
-            // Функция добавления ответа от бота с учётом режима
-            function addBotMessage(text, mode = null) {
-                const botDiv = document.createElement('div');
-                botDiv.className = 'message-placeholder message-local';
-                
-                let bubbleClass = 'bubble';
-                let avatar = '🧠';
-                
-                // Выбор оформления в зависимости от режима
-                if (mode === 'reasoning' || currentMode === 'reasoning') {
-                    bubbleClass += ' reasoning-bubble';
-                    avatar = '🧐';
-                } else if (mode === 'search' || currentMode === 'search') {
-                    bubbleClass += ' search-bubble';
-                    avatar = '🔍';
-                } else {
-                    avatar = '🤖';
-                }
-
-                botDiv.innerHTML = `
-                    <div class="avatar-small">${avatar}</div>
-                    <div class="${bubbleClass}">${escapeHTML(text)}</div>
-                `;
-                messagesContainer.appendChild(botDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-
-            // Экранирование HTML
-            function escapeHTML(unsafe) {
-                return unsafe.replace(/[&<>"]/g, function(m) {
-                    if(m === '&') return '&amp;';
-                    if(m === '<') return '&lt;';
-                    if(m === '>') return '&gt;';
-                    if(m === '"') return '&quot;';
-                    return m;
+        // 👇 ТВОЙ КЛЮЧ СЮДА!!!
+        const API_KEY = "AIzaSyC9gg7tyt-KNMd-EXzQqSVnDVzAIQaytYM;
+        
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const message = userInput.value;
+            if (!message) return;
+            
+            // Показываем сообщение пользователя
+            addMessage(message, 'user');
+            userInput.value = '';
+            
+            // Показываем "печатает..."
+            const typingId = addTypingIndicator();
+            
+            try {
+                // Отправляем запрос к Gemini
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + API_KEY, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: message
+                            }]
+                        }]
+                    })
                 });
-            }
-
-            // Генерация ответа в зависимости от режима
-            function generateResponse(userMessage) {
-                const msg = userMessage.toLowerCase();
-
-                if (currentMode === 'reasoning') {
-                    if (msg.includes('почему') || msg.includes('зачем') || msg.includes('как')) {
-                        return "Давайте поразмышляем... 🤔 " + userMessage + "? Это интересный вопрос. Возможно, дело в том, что нейросети обучаются на больших данных. Но нужно учитывать контекст.";
-                    }
-                    return "🧐 Рассуждая логически: " + userMessage + ". Мне кажется, здесь важно обратить внимание на детали. Что именно вас интересует?";
-                }
                 
-                if (currentMode === 'search') {
-                    return "🔍 Ищу в интернете: «" + userMessage + "»...\n\nВот что удалось найти:\n• Первый результат по запросу\n• Второй связанный источник\n• Дополнительная информация";
-                }
+                const data = await response.json();
+                // Убираем "печатает..."
+                removeTypingIndicator(typingId);
                 
-                // Обычный режим
-                const answers = [
-                    "Интересный вопрос!",
-                    "Я могу помочь с этим.",
-                    "Расскажи подробнее.",
-                    "Чем ещё могу быть полезен?",
-                    "Понял, продолжаем."
-                ];
-                return answers[Math.floor(Math.random() * answers.length)];
+                // Получаем ответ
+                const reply = data.candidates[0].content.parts[0].text;
+                addMessage(reply, 'bot');
+                
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                addMessage('Ошибка: ' + error, 'bot');
             }
-
-            // Обработка отправки сообщения
-            function handleSend() {
-                const msg = inputField.value.trim();
-                if (msg === '') return;
-
-                addUserMessage(msg);
-                inputField.value = '';
-
-                setTimeout(() => {
-                    const response = generateResponse(msg);
-                    addBotMessage(response);
-                }, 600);
-            }
-
-            // Обработчики событий
-            sendButton.addEventListener('click', handleSend);
-
-            inputField.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSend();
-                }
-            });
-
-            attachButton.addEventListener('click', () => {
-                addBotMessage("📎 Функция прикрепления файлов появится скоро.");
-            });
-
-            menuIcon.addEventListener('click', () => {
-                addBotMessage("Меню BloxSeek: здесь будут настройки и история чатов.");
-            });
-
-            // Двойной клик по аватарке
-            document.querySelector('.big-avatar').addEventListener('dblclick', () => {
-                addBotMessage("BloxSeek v0.2 — теперь с режимами рассуждения и поиска!");
-            });
-
-            // Инициализация UI
-            updateFeatureUI();
-        })();
+        }
+        
+        function addMessage(text, sender) {
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = sender + '-message';
+            div.textContent = (sender === 'user' ? '👤: ' : '🤖: ') + text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function addTypingIndicator() {
+            const messages = document.getElementById('messages');
+            const id = 'typing-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.textContent = '🤖 печатает...';
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+            return id;
+        }
+        
+        function removeTypingIndicator(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+        
+        // Enter отправляет
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
     </script>
 </body>
-</html>
+</html>ц
